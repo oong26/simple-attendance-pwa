@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary: #135bec;
+  --color-primary-hover: #0e4bce;
+  --color-primary-light: #eff6ff;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fc;
+  --color-surface-alt: #f8fafc;
+  --color-border-subtle: #e2e8f0;
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-light: var(--color-primary-light);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-surface-alt: var(--color-surface-alt);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-text-main: var(--color-text-main);
+  --color-text-muted: var(--color-text-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Custom animations */
+@keyframes subtle-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(19, 91, 236, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(19, 91, 236, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(19, 91, 236, 0);
   }
 }
 
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: subtle-pulse 2s infinite;
+}
+
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe areas for PWA */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: "Inter", sans-serif;
+  background: var(--color-background);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom shadows */
+@utility shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+@utility shadow-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
