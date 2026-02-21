@@ -1,6 +1,54 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { fetchApi } from "@/lib/api";
 
 export default function LoginPage() {
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone || !password) {
+      setError("Please fill in both phone number and password.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetchApi("login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        localStorage.setItem("token", data.token);
+        if (data.customer) {
+          localStorage.setItem("user", JSON.stringify(data.customer));
+        }
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Login failed. Please check your credentials.");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-[#f6f6f8] text-slate-900 min-h-screen flex flex-col font-sans">
       {/* Top Navigation / Header */}
@@ -33,20 +81,29 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <div className="w-full space-y-4">
-          {/* ID/Email Input */}
+        <form onSubmit={handleLogin} className="w-full space-y-4">
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-center gap-2">
+              <span className="material-icons-round text-[18px]">error_outline</span>
+              <span>{error}</span>
+            </div>
+          )}
+          {/* Phone Input */}
           <div className="flex flex-col w-full">
             <label className="text-slate-700 text-sm font-semibold mb-2 ml-1">
-              Employee ID or Email
+              Phone Number
             </label>
             <div className="relative">
               <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
-                person
+                phone
               </span>
               <input
                 className="w-full pl-12 pr-4 py-4 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec] outline-none transition-all placeholder:text-slate-400"
-                placeholder="e.g. EMP-12345"
-                type="text"
+                placeholder="e.g. 08123456789"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={loading}
               />
             </div>
           </div>
@@ -72,19 +129,31 @@ export default function LoginPage() {
                 className="w-full pl-12 pr-12 py-4 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#135bec]/50 focus:border-[#135bec] outline-none transition-all placeholder:text-slate-400"
                 placeholder="••••••••"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <button 
+                type="button" 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+              >
                 <span className="material-icons-round text-xl">visibility</span>
               </button>
             </div>
           </div>
 
           {/* Primary Action: Login */}
-          <Link href="/dashboard">
-            <button className="w-full bg-[#135bec] hover:bg-[#135bec]/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#135bec]/20 transition-all flex items-center justify-center gap-2 mt-2">
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-[#135bec] hover:bg-[#135bec]/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-[#135bec]/20 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="material-icons-round animate-spin">refresh</span>
+            ) : (
               <span>Login</span>
-            </button>
-          </Link>
+            )}
+          </button>
 
           {/* Divider */}
           <div className="relative py-4 flex items-center">
@@ -96,11 +165,14 @@ export default function LoginPage() {
           </div>
 
           {/* Secondary Action: Face ID */}
-          <button className="w-full bg-[#135bec]/10 border border-[#135bec]/30 hover:bg-[#135bec]/20 text-[#135bec] font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3">
+          <button 
+            type="button"
+            className="w-full bg-[#135bec]/10 border border-[#135bec]/30 hover:bg-[#135bec]/20 text-[#135bec] font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3"
+          >
             <span className="material-icons-round text-2xl">face</span>
             <span>Sign in with Face ID</span>
           </button>
-        </div>
+        </form>
 
         {/* Illustration / Context Image */}
         <div className="w-full mt-10 px-4">

@@ -37,7 +37,7 @@ export default function ClockInButton({ onClockIn }: ClockInButtonProps) {
           fingerprint
         </span>
         <span className="text-xl font-bold tracking-wide drop-shadow-sm">
-          {isClockedIn ? "Clock Out" : "Clock In"}
+          {"Attendance"}
         </span>
         <span className="text-xs text-blue-100 mt-1 opacity-90 font-medium">
           Tap to verify face ID

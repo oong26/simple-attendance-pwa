@@ -11,7 +11,7 @@ export default function SplashScreen() {
     setMounted(true);
     // Splash screen duration - 2.5 seconds
     const timer = setTimeout(() => {
-      router.push("/login");
+      router.push("/dashboard");
     }, 2500);
 
     return () => clearTimeout(timer);

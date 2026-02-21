@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-export default function Greeting() {
+interface GreetingProps {
+  userName?: string;
+}
+
+export default function Greeting({ userName = "Guest" }: GreetingProps) {
   const [greeting, setGreeting] = useState("Good Morning");
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export default function Greeting() {
           {greeting},
         </p>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Alex Morgan
+          {userName}
         </h1>
       </div>
       <button className="relative group">

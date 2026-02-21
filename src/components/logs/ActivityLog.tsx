@@ -1,6 +1,8 @@
 type AttendanceStatus = "on-time" | "late" | "off-day" | "absent";
 
 interface ActivityEntry {
+  id: number;
+  employeeName: string;
   month: string;
   day: number;
   dayName: string;
@@ -14,46 +16,10 @@ interface ActivityEntry {
   errorMessage?: string;
 }
 
-const SAMPLE_DATA: ActivityEntry[] = [
-  {
-    month: "OCT",
-    day: 24,
-    dayName: "Tuesday",
-    status: "on-time",
-    totalHours: "8h 30m",
-    inTime: "09:00 AM",
-    outTime: "05:30 PM",
-    inIcon: "login",
-    inIconColor: "bg-blue-50 text-blue-500",
-  },
-  {
-    month: "OCT",
-    day: 23,
-    dayName: "Monday",
-    status: "late",
-    totalHours: "8h 15m",
-    inTime: "09:45 AM",
-    outTime: "06:00 PM",
-    inIcon: "schedule",
-    inIconColor: "bg-amber-50 text-amber-500",
-    inTimeColor: "text-amber-600",
-  },
-  {
-    month: "OCT",
-    day: 22,
-    dayName: "Sunday",
-    status: "off-day",
-    totalHours: "-",
-  },
-  {
-    month: "OCT",
-    day: 20,
-    dayName: "Friday",
-    status: "absent",
-    totalHours: "0h 00m",
-    errorMessage: "No Check-in Recorded",
-  },
-];
+interface ActivityLogProps {
+  logs: ActivityEntry[];
+  loading: boolean;
+}
 
 const STATUS_STYLES: Record<AttendanceStatus, string> = {
   "on-time": "text-slate-500 bg-slate-100",
@@ -69,16 +35,42 @@ const STATUS_LABELS: Record<AttendanceStatus, string> = {
   absent: "Absent",
 };
 
-export default function ActivityLog() {
+export default function ActivityLog({ logs, loading }: ActivityLogProps) {
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 pl-1">
+          Recent Activity
+        </h3>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-2xl h-32 border border-slate-100 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
+  if (logs.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 pl-1">
+          Recent Activity
+        </h3>
+        <div className="bg-white rounded-2xl p-8 border border-slate-100 text-center text-slate-500">
+          No attendance recorded for this month.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 pl-1">
         Recent Activity
       </h3>
 
-      {SAMPLE_DATA.map((entry) => (
+      {logs.map((entry) => (
         <div
-          key={`${entry.month}-${entry.day}`}
+          key={entry.id}
           className={`group bg-white rounded-2xl p-4 border border-slate-100 hover:border-blue-200 transition-all shadow-card ${
             entry.status === "off-day" ? "opacity-80" : ""
           }`}
@@ -96,10 +88,13 @@ export default function ActivityLog() {
               </div>
               <div>
                 <h4 className="font-bold text-slate-800 text-base">
-                  {entry.dayName}
+                  {entry.employeeName}
                 </h4>
+                <p className="text-xs text-slate-500 font-medium mb-1">
+                    {entry.dayName}
+                </p>
                 <span
-                  className={`text-xs px-2.5 py-1 rounded-md font-medium inline-block mt-1 ${
+                  className={`text-xs px-2.5 py-1 rounded-md font-medium inline-block mt-0.5 ${
                     STATUS_STYLES[entry.status]
                   }`}
                 >

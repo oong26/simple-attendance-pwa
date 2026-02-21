@@ -1,4 +1,21 @@
-export default function MonthlySummary() {
+interface MonthlySummaryProps {
+  summary: {
+    total_hours: number;
+    total_minutes: number;
+    work_days: number;
+    punctuality: number;
+    punctuality_label: string;
+  } | null;
+}
+
+export default function MonthlySummary({ summary }: MonthlySummaryProps) {
+  if (!summary) {
+    return (
+      <div className="bg-white rounded-2xl p-5 mb-6 shadow-soft border border-slate-100 flex items-center justify-center min-h-[140px]">
+        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
   return (
     <div className="bg-white rounded-2xl p-5 mb-6 text-slate-800 shadow-soft border border-slate-100 relative overflow-hidden">
       {/* Decorative blobs */}
@@ -12,17 +29,9 @@ export default function MonthlySummary() {
               Monthly Summary
             </p>
             <h3 className="text-3xl font-bold text-slate-900">
-              168h{" "}
-              <span className="text-lg font-medium text-slate-400">20m</span>
+              {summary.total_hours}h{" "}
+              <span className="text-lg font-medium text-slate-400">{summary.total_minutes}m</span>
             </h3>
-          </div>
-          <div className="flex flex-col items-end">
-            <div className="flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-lg border border-green-100">
-              <span className="material-icons-round text-sm text-green-600">
-                trending_up
-              </span>
-              <span className="text-xs font-bold text-green-700">+4.2%</span>
-            </div>
           </div>
         </div>
 
@@ -31,16 +40,16 @@ export default function MonthlySummary() {
             <p className="text-slate-400 text-xs mb-1 font-medium">
               Work Days
             </p>
-            <p className="font-bold text-lg text-slate-700">22 Days</p>
+            <p className="font-bold text-lg text-slate-700">{summary.work_days} Days</p>
           </div>
           <div>
             <p className="text-slate-400 text-xs mb-1 font-medium">
               Punctuality
             </p>
             <div className="flex items-center gap-2">
-              <p className="font-bold text-lg text-slate-700">95%</p>
+              <p className="font-bold text-lg text-slate-700">{summary.punctuality}%</p>
               <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full text-[10px] font-bold border border-blue-100">
-                Excellent
+                {summary.punctuality_label}
               </span>
             </div>
           </div>

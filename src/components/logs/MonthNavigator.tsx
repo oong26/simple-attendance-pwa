@@ -1,23 +1,27 @@
 "use client";
 
-import { useState } from "react";
+
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
 
-export default function MonthNavigator() {
-  const [currentDate, setCurrentDate] = useState(new Date(2023, 9)); // October 2023
+interface MonthNavigatorProps {
+  currentDate: Date;
+  onDateChange: (date: Date) => void;
+}
+
+export default function MonthNavigator({ currentDate, onDateChange }: MonthNavigatorProps) {
 
   const goToPrev = () => {
-    setCurrentDate(
+    onDateChange(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
     );
   };
 
   const goToNext = () => {
-    setCurrentDate(
+    onDateChange(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
     );
   };
