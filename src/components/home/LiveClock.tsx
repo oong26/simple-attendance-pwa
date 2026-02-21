@@ -21,6 +21,7 @@ export default function LiveClock() {
           weekday: "long",
           month: "long",
           day: "numeric",
+          year: "numeric",
         })
       );
     };
@@ -36,7 +37,7 @@ export default function LiveClock() {
         {time || "--:--"}
       </div>
       <div className="text-[var(--color-text-muted)] font-medium text-lg">
-        {date}
+        {date || ""}
       </div>
     </div>
   );

@@ -13,8 +13,14 @@ const FaceRecognitionModal = dynamic(
   { ssr: false }
 );
 
+const QRCodeModal = dynamic(
+  () => import("@/components/clock-in/QRCodeModal"),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   const [showFaceRecog, setShowFaceRecog] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
   const [locationName, setLocationName] = useState("Head Office");
 
   const loadLocationData = useCallback(async () => {
@@ -41,12 +47,13 @@ export default function DashboardPage() {
 
   const handleClockInComplete = useCallback(() => {
     setShowFaceRecog(false);
+    setShowQrCode(false);
   }, []);
 
   return (
     <>
       <MobileLayout>
-        <div className="px-6 flex-1 flex flex-col pt-8">
+        <div className="px-6 flex-1 flex flex-col pt-8 pb-24">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Welcome</h1>
             <p className="text-gray-500 text-sm mt-1">Please tap below to record your attendance</p>
@@ -55,6 +62,16 @@ export default function DashboardPage() {
           <LiveClock />
           <LocationBadge locationName={locationName} />
           <ClockInButton onClockIn={handleClockIn} />
+          
+          <div className="mt-6 flex justify-center">
+            <button
+               onClick={() => setShowQrCode(true)}
+               className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-full shadow-sm hover:bg-gray-50 active:scale-95 transition-all w-full max-w-[280px] justify-center"
+            >
+               <span className="material-icons-round text-gray-500">qr_code_scanner</span>
+               <span className="font-medium text-sm">Scan QR Code</span>
+            </button>
+          </div>
           
           <div className="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
              <span className="material-icons-round text-blue-500 mt-0.5">info</span>
@@ -68,6 +85,12 @@ export default function DashboardPage() {
       <FaceRecognitionModal
         isOpen={showFaceRecog}
         onClose={() => setShowFaceRecog(false)}
+        onComplete={handleClockInComplete}
+      />
+
+      <QRCodeModal
+        isOpen={showQrCode}
+        onClose={() => setShowQrCode(false)}
         onComplete={handleClockInComplete}
       />
     </>

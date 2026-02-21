@@ -7,7 +7,7 @@ interface MobileLayoutProps {
 export default function MobileLayout({ children }: MobileLayoutProps) {
   return (
     <div className="bg-white min-h-screen h-screen overflow-hidden flex flex-col selection:bg-[var(--color-primary)] selection:text-white max-w-md mx-auto">
-      <main className="flex-1 overflow-hidden flex flex-col">
+      <main className="flex-1 overflow-y-auto flex flex-col">
         {children}
       </main>
       <BottomNav />
