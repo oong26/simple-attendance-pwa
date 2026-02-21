@@ -25,6 +25,7 @@ export default function FaceRecognitionModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const successSound = process.env.NEXT_PUBLIC_SUCCESS_SOUND || "success2.mp3";
 
   // Load models
   useEffect(() => {
@@ -178,6 +179,11 @@ export default function FaceRecognitionModal({
 
       if (response.ok) {
         setApiMessage(`Success: ${data.message} as ${data.employee_name}`);
+        
+        // Play success sound
+        const audio = new Audio(`/sounds/${successSound}`);
+        audio.play().catch(e => console.error("Error playing sound:", e));
+        
         setTimeout(() => {
           onComplete();
         }, 1500);

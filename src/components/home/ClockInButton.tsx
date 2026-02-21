@@ -4,12 +4,14 @@ import { useState } from "react";
 
 interface ClockInButtonProps {
   onClockIn: () => void;
+  disabled?: boolean;
 }
 
-export default function ClockInButton({ onClockIn }: ClockInButtonProps) {
+export default function ClockInButton({ onClockIn, disabled = false }: ClockInButtonProps) {
   const [isClockedIn, setIsClockedIn] = useState(false);
 
   const handleClick = () => {
+    if (disabled) return;
     if (!isClockedIn) {
       onClockIn();
     } else {
@@ -26,8 +28,11 @@ export default function ClockInButton({ onClockIn }: ClockInButtonProps) {
       {/* Main button */}
       <button
         onClick={handleClick}
+        disabled={disabled}
         className={`group relative w-56 h-56 rounded-full shadow-xl flex flex-col items-center justify-center text-white transition-all transform hover:scale-[1.02] active:scale-[0.98] animate-pulse-subtle z-20 ${
-          isClockedIn
+          disabled
+            ? "bg-slate-300 shadow-none cursor-not-allowed opacity-80"
+            : isClockedIn
             ? "bg-orange-500 shadow-orange-200 hover:bg-orange-600"
             : "bg-[var(--color-primary)] shadow-blue-200 hover:bg-[var(--color-primary-hover)]"
         }`}

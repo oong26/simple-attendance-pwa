@@ -22,6 +22,8 @@ export default function DashboardPage() {
   const [showFaceRecog, setShowFaceRecog] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [locationName, setLocationName] = useState("Head Office");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [disabledReason, setDisabledReason] = useState<string | null>(null);
 
   const loadLocationData = useCallback(async () => {
     try {
@@ -31,6 +33,32 @@ export default function DashboardPage() {
       
       if (response.ok && data.success && data.department) {
         setLocationName(data.department.name);
+
+        // Validation for workdays and start time
+        if (data.department.workdays && Array.isArray(data.department.workdays)) {
+           const now = new Date();
+           const currentDayStr = now.toLocaleDateString("en-US", { weekday: "long" });
+           const currentHour = now.getHours();
+           const currentMinute = now.getMinutes();
+
+           const todaySetting = data.department.workdays.find((w: any) => w.day === currentDayStr);
+           
+           if (todaySetting) {
+             if (!todaySetting.is_working) {
+               setIsDisabled(true);
+               setDisabledReason(`Today is ${currentDayStr} (Day Off). Attendance is closed.`);
+             } else {
+               const [startHour, startMinute] = todaySetting.start_time.split(":").map(Number);
+               if (currentHour < startHour || (currentHour === startHour && currentMinute < startMinute)) {
+                 setIsDisabled(true);
+                 setDisabledReason(`Attendance will open today at ${todaySetting.start_time}.`);
+               } else {
+                 setIsDisabled(false);
+                 setDisabledReason(null);
+               }
+             }
+           }
+        }
       }
     } catch (error) {
       console.error("Failed to load department data", error);
@@ -61,14 +89,24 @@ export default function DashboardPage() {
           
           <LiveClock />
           <LocationBadge locationName={locationName} />
-          <ClockInButton onClockIn={handleClockIn} />
+          <ClockInButton onClockIn={handleClockIn} disabled={isDisabled} />
           
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex flex-col items-center gap-4">
+            {disabledReason && (
+              <div className="w-full max-w-[280px] text-center p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-100 break-words">
+                {disabledReason}
+              </div>
+            )}
             <button
                onClick={() => setShowQrCode(true)}
-               className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-full shadow-sm hover:bg-gray-50 active:scale-95 transition-all w-full max-w-[280px] justify-center"
+               disabled={isDisabled}
+               className={`flex items-center gap-2 px-6 py-3 border rounded-full shadow-sm transition-all w-full max-w-[280px] justify-center ${
+                 isDisabled
+                 ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                 : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95"
+               }`}
             >
-               <span className="material-icons-round text-gray-500">qr_code_scanner</span>
+               <span className={`material-icons-round ${isDisabled ? "text-gray-300" : "text-gray-500"}`}>qr_code_scanner</span>
                <span className="font-medium text-sm">Scan QR Code</span>
             </button>
           </div>
