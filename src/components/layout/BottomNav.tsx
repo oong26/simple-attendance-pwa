@@ -20,34 +20,34 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white border-t border-slate-100 px-6 pb-8 pt-3 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.03)]">
-      <ul className="flex justify-between items-center">
+    <nav className="bg-white/80 backdrop-blur-md border-t border-slate-100 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] shadow-soft z-50">
+      <ul className="flex justify-around items-center max-w-sm mx-auto">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <li key={item.href}>
+            <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                className={`flex flex-col items-center gap-1.5 transition-colors ${
+                className={`flex flex-col items-center gap-1 transition-all active:scale-90 ${
                   isActive
                     ? "text-[var(--color-primary)]"
                     : "text-slate-400 hover:text-slate-600"
                 }`}
               >
                 <div
-                  className={`p-1.5 rounded-lg transition-colors ${
+                  className={`p-2 rounded-xl transition-colors ${
                     isActive
                       ? "bg-blue-50"
-                      : "group-hover:bg-slate-50"
+                      : "hover:bg-slate-50"
                   }`}
                 >
-                  <span className="material-icons-round text-xl">
+                  <span className="material-icons-round text-2xl">
                     {item.icon}
                   </span>
                 </div>
                 <span
-                  className={`text-[11px] ${
-                    isActive ? "font-semibold" : "font-medium"
+                  className={`text-[10px] uppercase tracking-wider ${
+                    isActive ? "font-bold" : "font-medium"
                   }`}
                 >
                   {item.label}

@@ -27,41 +27,46 @@ export default function HomePage() {
 
   const loadLocationData = useCallback(async () => {
     try {
-      // Fetch department generic location
-      const response = await fetchApi("attendance/department", { method: "GET" });
-      const data = await response.json();
+      // 1. Fetch department info for location name
+      const deptResponse = await fetchApi("attendance/department", { method: "GET" });
+      const deptData = await deptResponse.json();
+      if (deptResponse.ok && deptData.success && deptData.department) {
+        setLocationName(deptData.department.name);
+      }
+
+      // 2. Fetch today's global status (Holiday, Day Off, Schedule)
+      const todayResponse = await fetchApi("attendance/today", { method: "GET" });
+      const todayData = await todayResponse.json();
       
-      if (response.ok && data.success && data.department) {
-        setLocationName(data.department.name);
+      if (todayResponse.ok && todayData.success) {
+        console.log(todayResponse)
+        if (todayData.is_holiday) {
+          setIsDisabled(true);
+          setDisabledReason(`Today is a holiday (${todayData.holiday_name}). Attendance is disabled.`);
+        } else if (todayData.is_day_off) {
+          setIsDisabled(true);
+          const currentDayStr = new Date().toLocaleDateString("en-US", { weekday: "long" });
+          setDisabledReason(`Today is ${currentDayStr} (Day Off). Attendance is closed.`);
+        } else if (todayData.schedule && todayData.schedule.start_time) {
+          const now = new Date();
+          const [startHour, startMinute] = todayData.schedule.start_time.split(":").map(Number);
+          const currentHour = now.getHours();
+          const currentMinute = now.getMinutes();
 
-        // Validation for workdays and start time
-        if (data.department.workdays && Array.isArray(data.department.workdays)) {
-           const now = new Date();
-           const currentDayStr = now.toLocaleDateString("en-US", { weekday: "long" });
-           const currentHour = now.getHours();
-           const currentMinute = now.getMinutes();
-
-           const todaySetting = data.department.workdays.find((w: any) => w.day === currentDayStr);
-           
-           if (todaySetting) {
-             if (!todaySetting.is_working) {
-               setIsDisabled(true);
-               setDisabledReason(`Today is ${currentDayStr} (Day Off). Attendance is closed.`);
-             } else {
-               const [startHour, startMinute] = todaySetting.start_time.split(":").map(Number);
-               if (currentHour < startHour || (currentHour === startHour && currentMinute < startMinute)) {
-                 setIsDisabled(true);
-                 setDisabledReason(`Attendance will open today at ${todaySetting.start_time}.`);
-               } else {
-                 setIsDisabled(false);
-                 setDisabledReason(null);
-               }
-             }
-           }
+          if (currentHour < startHour || (currentHour === startHour && currentMinute < startMinute)) {
+            setIsDisabled(true);
+            setDisabledReason(`Attendance will open today at ${todayData.schedule.start_time}.`);
+          } else {
+            setIsDisabled(false);
+            setDisabledReason(null);
+          }
+        } else {
+          setIsDisabled(false);
+          setDisabledReason(null);
         }
       }
     } catch (error) {
-      console.error("Failed to load department data", error);
+      console.error("Failed to load attendance status", error);
     }
   }, []);
 

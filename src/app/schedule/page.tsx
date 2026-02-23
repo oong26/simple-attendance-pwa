@@ -47,7 +47,7 @@ export default function SchedulePage() {
     const startTime = new Date(`1970-01-01T${start}Z`);
     const endTime = new Date(`1970-01-01T${end}Z`);
     const diffMs = endTime.getTime() - startTime.getTime();
-    return Math.max(0, diffMs / (1000 * 60 * 60));
+    return (diffMs / (1000 * 60 * 60)).toFixed(2);
   };
 
   const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
