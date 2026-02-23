@@ -20,12 +20,12 @@ export default function QRCodeModal({
 
   if (!isOpen) return null;
 
-  const handleScan = async (devices: unknown[]) => {
+  const handleScan = async (detectedCodes: { rawValue: string }[]) => {
     if (processing) return;
-    if (!devices || devices.length === 0) return;
+    if (!detectedCodes || detectedCodes.length === 0) return;
 
     // Get the detected value String
-    const rawValue = devices[0].rawValue;
+    const rawValue = detectedCodes[0].rawValue;
     if (!rawValue) return;
 
     setProcessing(true);
@@ -115,10 +115,6 @@ export default function QRCodeModal({
                <Scanner
                   onScan={handleScan}
                   formats={['qr_code']}
-                  components={{
-                      audio: false,
-                      tracker: true,
-                  }}
                   styles={{
                       container: { width: '100%', height: '100%' },
                   }}
