@@ -7,7 +7,6 @@ import LocationBadge from "@/components/home/LocationBadge";
 import ClockInButton from "@/components/home/ClockInButton";
 import dynamic from "next/dynamic";
 import { fetchApi } from "@/lib/api";
-
 const FaceRecognitionModal = dynamic(
   () => import("@/components/clock-in/FaceRecognitionModal"),
   { ssr: false }
@@ -18,7 +17,8 @@ const QRCodeModal = dynamic(
   { ssr: false }
 );
 
-export default function DashboardPage() {
+
+export default function HomePage() {
   const [showFaceRecog, setShowFaceRecog] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [locationName, setLocationName] = useState("Head Office");

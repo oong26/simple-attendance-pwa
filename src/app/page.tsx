@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 export default function SplashScreen() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const appName = process.env.NEXT_PUBLIC_APP_NAME;
 
   useEffect(() => {
     setMounted(true);
     // Splash screen duration - 2.5 seconds
     const timer = setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/home");
     }, 2500);
 
     return () => clearTimeout(timer);
@@ -40,7 +41,7 @@ export default function SplashScreen() {
         </div>
         
         <h1 className="text-white text-3xl font-bold tracking-tight mb-2">
-          Attendance Pro
+          {appName}
         </h1>
         <p className="text-blue-100 text-sm font-medium tracking-wide uppercase opacity-80">
           Enterprise Solutions

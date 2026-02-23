@@ -10,13 +10,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Simple Attendance",
+  title: {
+    template: `%s - ${process.env.NEXT_PUBLIC_APP_NAME || "Simple Attendance"}`,
+    default: process.env.NEXT_PUBLIC_APP_NAME || "Simple Attendance",
+  },
   description: "Simple Attendance Tracking PWA",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Simple Attendance",
+    title: process.env.NEXT_PUBLIC_APP_NAME || "Simple Attendance",
   },
 };
 

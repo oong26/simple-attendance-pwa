@@ -38,7 +38,7 @@ export default function LoginPage() {
         if (data.customer) {
           localStorage.setItem("user", JSON.stringify(data.customer));
         }
-        router.push("/dashboard");
+        router.push("/home");
       } else {
         setError(data.message || "Login failed. Please check your credentials.");
       }
