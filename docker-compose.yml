@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_HOST=${NEXT_PUBLIC_API_HOST}
+        - GADAIKU_API_KEY=${GADAIKU_API_KEY}
+    image: ${DOCKER_IMAGE:-gadaiku-pwa}
+    container_name: gadaiku-pwa
+    ports:
+      - "3131:3131"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    restart: always
