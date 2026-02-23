@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -35,9 +36,16 @@ export default function SplashScreen() {
 
       <div className="z-10 flex flex-col items-center animate-[fade-in-up_1s_ease-out]">
         <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl shadow-blue-900/20 animate-[bounce_2s_infinite]">
-          <span className="material-icons-round text-[#135bec] text-6xl">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={80}
+            height={80}
+            className="p-4"
+          />
+          {/* <span className="material-icons-round text-[#135bec] text-6xl">
             domain
-          </span>
+          </span> */}
         </div>
         
         <h1 className="text-white text-3xl font-bold tracking-tight mb-2">
