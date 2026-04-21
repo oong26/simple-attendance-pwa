@@ -31,7 +31,7 @@ export default function QRCodeModal({
     setProcessing(true);
     setApiMessage(null);
 
-    // Validate if it is JSON and has employee_id
+    // Validate if it is JSON and has employee_number
     let parsedData = null;
     try {
       parsedData = JSON.parse(rawValue);
@@ -41,7 +41,7 @@ export default function QRCodeModal({
        return;
     }
 
-    if (!parsedData || !parsedData.employee_id) {
+    if (!parsedData || !parsedData.employee_number) {
        setApiMessage("Error: No valid Employee ID found in QR Code");
        setTimeout(() => setProcessing(false), 2000);
        return;
