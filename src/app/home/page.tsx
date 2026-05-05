@@ -23,9 +23,12 @@ export default function HomePage() {
   const [showQrCode, setShowQrCode] = useState(false);
   const [locationName, setLocationName] = useState("Head Office");
   const [isDisabled, setIsDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [scannerType, setScannerType] = useState<string>("qrcode");
   const [disabledReason, setDisabledReason] = useState<string | null>(null);
 
   const loadLocationData = useCallback(async () => {
+    setLoading(true);
     try {
       // 1. Fetch department info for location name
       const deptResponse = await fetchApi("attendance/department", { method: "GET" });
@@ -37,9 +40,8 @@ export default function HomePage() {
       // 2. Fetch today's global status (Holiday, Day Off, Schedule)
       const todayResponse = await fetchApi("attendance/today", { method: "GET" });
       const todayData = await todayResponse.json();
-      
+
       if (todayResponse.ok && todayData.success) {
-        console.log(todayResponse)
         if (todayData.is_holiday) {
           setIsDisabled(true);
           setDisabledReason(`Today is a holiday (${todayData.holiday_name}). Attendance is disabled.`);
@@ -65,8 +67,18 @@ export default function HomePage() {
           setDisabledReason(null);
         }
       }
+
+      // 3. Fetch scanner type
+      const scannerResponse = await fetchApi("attendance/scanner-type", { method: "GET" });
+      const scannerData = await scannerResponse.json();
+
+      if (scannerResponse.ok && scannerData.success) {
+        setScannerType(scannerData.data.type);
+      }
     } catch (error) {
       console.error("Failed to load attendance status", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -102,18 +114,25 @@ export default function HomePage() {
                 {disabledReason}
               </div>
             )}
-            <button
-               onClick={() => setShowQrCode(true)}
-               disabled={isDisabled}
-               className={`flex items-center gap-2 px-6 py-3 border rounded-full shadow-sm transition-all w-full max-w-[280px] justify-center ${
-                 isDisabled
-                 ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                 : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95"
-               }`}
-            >
-               <span className={`material-icons-round ${isDisabled ? "text-gray-300" : "text-gray-500"}`}>qr_code_scanner</span>
-               <span className="font-medium text-sm">Scan QR Code</span>
-            </button>
+            {loading && (
+              <div className="w-full max-w-[280px] text-center p-3 bg-blue-50 text-blue-600 text-sm font-medium rounded-xl border border-blue-100 break-words">
+                Loading...
+              </div>
+            )}
+            {!loading && (
+              <button
+                  onClick={() => setShowQrCode(true)}
+                  disabled={isDisabled}
+                  className={`flex items-center gap-2 px-6 py-3 border rounded-full shadow-sm transition-all w-full max-w-[280px] justify-center ${
+                    isDisabled
+                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95"
+                  }`}
+              >
+                  <span className={`material-icons-round ${isDisabled ? "text-gray-300" : "text-gray-500"}`}>qr_code_scanner</span>
+                  <span className="font-medium text-sm">{scannerType == 'qrcode' ? 'Scan QR Code' : 'Scan Barcode'}</span>
+              </button>
+            )}
           </div>
           
           <div className="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
@@ -135,6 +154,7 @@ export default function HomePage() {
         isOpen={showQrCode}
         onClose={() => setShowQrCode(false)}
         onComplete={handleClockInComplete}
+        scannerType={scannerType}
       />
     </>
   );

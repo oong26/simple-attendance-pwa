@@ -8,13 +8,16 @@ interface QRCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: () => void;
+  scannerType: string;
 }
 
 export default function QRCodeModal({
   isOpen,
   onClose,
   onComplete,
+  scannerType,
 }: QRCodeModalProps) {
+  console.log('scanner type: ', scannerType);
   const [processing, setProcessing] = useState(false);
   const [apiMessage, setApiMessage] = useState<string | null>(null);
 
@@ -31,20 +34,28 @@ export default function QRCodeModal({
     setProcessing(true);
     setApiMessage(null);
 
-    // Validate if it is JSON and has employee_number
-    let parsedData = null;
-    try {
-      parsedData = JSON.parse(rawValue);
-    } catch {
-       setApiMessage("Error: Invalid QR Code format");
-       setTimeout(() => setProcessing(false), 2000);
-       return;
-    }
+    if (scannerType === 'qrcode') {
+      // Validate if it is JSON and has employee_number
+      let parsedData = null;
+      try {
+        parsedData = JSON.parse(rawValue);
+      } catch {
+         setApiMessage("Error: Invalid QR Code format");
+         setTimeout(() => setProcessing(false), 2000);
+         return;
+      }
 
-    if (!parsedData || !parsedData.employee_number) {
-       setApiMessage("Error: No valid Employee ID found in QR Code");
-       setTimeout(() => setProcessing(false), 2000);
-       return;
+      if (!parsedData || !parsedData.employee_number) {
+         setApiMessage("Error: No valid Employee ID found in QR Code");
+         setTimeout(() => setProcessing(false), 2000);
+         return;
+      }
+    } else {
+      if (!rawValue || rawValue.trim() === '') {
+         setApiMessage("Error: Invalid Barcode format");
+         setTimeout(() => setProcessing(false), 2000);
+         return;
+      }
     }
 
     // Attempt scan payload
@@ -102,7 +113,7 @@ export default function QRCodeModal({
             <span className="material-icons-round">close</span>
           </button>
           <h1 className="text-lg font-semibold tracking-wide text-gray-800">
-            Scan QR Code
+            {scannerType === 'barcode' ? 'Scan Barcode' : 'Scan QR Code'}
           </h1>
           <div className="w-10" />
         </div>
@@ -114,7 +125,7 @@ export default function QRCodeModal({
              {!processing && isOpen && (
                <Scanner
                   onScan={handleScan}
-                  formats={['qr_code']}
+                  formats={scannerType === 'barcode' ? undefined : ['qr_code']}
                   styles={{
                       container: { width: '100%', height: '100%' },
                   }}
@@ -132,7 +143,7 @@ export default function QRCodeModal({
           </div>
 
           <h2 className="mt-8 text-xl font-semibold text-center text-gray-800">
-             Align QR Code within the frame
+             {scannerType === 'barcode' ? 'Align Barcode within the frame' : 'Align QR Code within the frame'}
           </h2>
           <p className={"mt-2 text-center text-sm font-medium px-4 " + 
             (apiMessage?.startsWith("Failed") || apiMessage?.startsWith("Error") ? "text-red-500" : 
